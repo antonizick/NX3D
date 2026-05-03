@@ -1,4 +1,4 @@
-# CustomWolf
+# NX-3D
 
 Browser-based multi-tenant Wolfenstein 3D clone. Built with a Fastify backend, React 19 admin panel, and a pure-TypeScript HTML5 Canvas game engine. No database — 100% filesystem JSON.
 
