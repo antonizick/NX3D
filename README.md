@@ -143,3 +143,24 @@ Assets are served with a double-`assets/` path:
 ## License
 
 Private — all rights reserved.
+
+## Screenshots
+
+<p align="center">
+  <img src="https://drive.google.com/uc?export=view&id=1bM4-VQr3QOM6olYkshrxzvcbnU-zspxo" width="45%" alt="Screenshot 1" />
+  <img src="https://drive.google.com/uc?export=view&id=1Vnm1U1QZVSs-4xM5zmDY2P4RRHrpestE" width="45%" alt="Screenshot 2" />
+</p>
+<br/>
+<p align="center">
+  <img src="https://drive.google.com/uc?export=view&id=1Oihp09Yuv4vl0DKc4rvUyoDTJYbMu_hT" width="45%" alt="Screenshot 3" />
+  <img src="https://drive.google.com/uc?export=view&id=1-Ag46Xc_FeRyDIgZIPW2K3IVdEW-s4c2" width="45%" alt="Screenshot 4" />
+</p>
+<br/>
+<p align="center">
+  <img src="https://drive.google.com/uc?export=view&id=1nDHpIQciQT_w5tf0T1imlRz7LdhPjij1" width="45%" alt="Screenshot 5" />
+  <img src="https://drive.google.com/uc?export=view&id=1g7dOashxyBVvVI9e_5xRb90LTIe1by9i" width="45%" alt="Screenshot 6" />
+</p>
+<br/>
+<p align="center">
+  <img src="https://drive.google.com/uc?export=view&id=1TyVGOijyw0lcuU0oMywm22blHdL0USTL" width="45%" alt="Screenshot 7" />
+</p>

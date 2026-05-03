@@ -27,7 +27,7 @@
       "name": "Guard",
       "hp": 30,
       "speed": 2,
-      "attackDamage": 12,
+      "attackDamage": 1,
       "attackRange": 8,
       "attackCooldown": 800,
       "sightRange": 20,
