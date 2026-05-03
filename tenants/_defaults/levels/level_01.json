@@ -1,0 +1,15 @@
+{
+  "_comment": "Placeholder level — overwritten by the generator. Serves as a schema reference.",
+  "levelId": 1,
+  "name": "Level 1",
+  "episode": 1,
+  "grid": [],
+  "doors": [],
+  "entities": [],
+  "secrets": [],
+  "elevator": { "x": 32, "y": 32 },
+  "playerStart": { "x": 5, "y": 5, "angle": 0 },
+  "parTime": 90,
+  "isFinalLevel": false,
+  "hasBoss": false
+}

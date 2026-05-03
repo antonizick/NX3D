@@ -1,0 +1,24 @@
+{
+  "currentLevel": 1,
+  "currentEpisode": 1,
+  "score": 0,
+  "lives": 3,
+  "health": 100,
+  "weapons": [
+    "pistol"
+  ],
+  "currentWeapon": "pistol",
+  "ammo": {
+    "bullets": 27,
+    "shells": 15
+  },
+  "keys": [],
+  "completedLevels": [],
+  "difficulty": "normal",
+  "secretsFound": 0,
+  "kills": 0,
+  "treasures": 0,
+  "playerId": "2bd2b47a-16da-4944-a43c-207329c4d052",
+  "tenantId": "b442ae00-499d-43e6-900e-6cb6325f3ecb",
+  "savedAt": "2026-04-30T22:39:48.385Z"
+}

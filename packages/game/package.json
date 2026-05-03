@@ -1,0 +1,15 @@
+{
+  "name": "@customwolf/game",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev":   "vite --port 5174",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.1",
+    "typescript": "^5.5.4",
+    "vite": "^5.3.5"
+  }
+}

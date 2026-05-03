@@ -1,0 +1,30 @@
+{
+  email admin@example.com
+}
+
+yourdomain.com {
+  # API — backend
+  handle /api/* {
+    reverse_proxy app:3001
+  }
+
+  # Tenant static assets served by backend
+  handle /assets/* {
+    reverse_proxy app:3001
+  }
+
+  # Admin panel SPA (serves from backend's public/admin)
+  handle /admin/* {
+    reverse_proxy app:3001
+  }
+
+  # Game SPA (served under /game/:tenantId/*)
+  handle /game/* {
+    reverse_proxy app:3001
+  }
+
+  # Root → redirect to admin
+  handle / {
+    redir /admin 302
+  }
+}

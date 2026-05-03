@@ -1,0 +1,17 @@
+{
+  "name": "customwolf",
+  "private": true,
+  "version": "1.0.0",
+  "workspaces": ["packages/*"],
+  "scripts": {
+    "dev": "bash dev.sh",
+    "build": "npm run build -w packages/server && npm run build -w packages/admin && npm run build -w packages/game",
+    "start": "node packages/server/dist/index.js"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}

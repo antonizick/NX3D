@@ -1,0 +1,259 @@
+{
+  "tenantId": "47116121-d2c8-4be6-aca6-0a3fa9377283",
+  "name": "Nx-3D Cyborg",
+  "createdAt": "2026-05-01T14:55:49.536Z",
+  "theme": {
+    "primaryColor": "#00c742",
+    "accentColor": "#1e00ff",
+    "hudColor": "#3a3a3a",
+    "skyColor": "#383838",
+    "floorColor": "#707070"
+  },
+  "game": {
+    "title": "Nx-3D Cyborg",
+    "episodes": 1,
+    "levelsPerEpisode": 2,
+    "startingLives": 3,
+    "maxHealth": 100,
+    "maxAmmo": {
+      "bullets": 99,
+      "shells": 50
+    },
+    "weaponRange": 11
+  },
+  "enemies": [
+    {
+      "id": "guard",
+      "name": "Guard",
+      "hp": 30,
+      "speed": 2,
+      "attackDamage": 12,
+      "attackRange": 8,
+      "attackCooldown": 800,
+      "sightRange": 20,
+      "isBoss": false,
+      "score": 100,
+      "dropItem": null,
+      "sprites": {
+        "angles": 8,
+        "walk": {
+          "frames": 4,
+          "fps": 8
+        },
+        "attack": {
+          "frames": 2,
+          "fps": 8
+        },
+        "death": {
+          "frames": 5,
+          "fps": 10
+        },
+        "pain": {
+          "frames": 1,
+          "fps": 4
+        }
+      },
+      "sounds": {
+        "alert": "alert.mp3",
+        "pain": "pain.mp3",
+        "death": "death.mp3",
+        "attack": "attack.mp3",
+        "step": "step.mp3"
+      }
+    }
+  ],
+  "weapons": [
+    {
+      "id": "pistol",
+      "name": "Pistol",
+      "damage": 15,
+      "fireRate": 2,
+      "ammoType": "bullets",
+      "ammoPerShot": 1,
+      "behaviorType": "hitscan",
+      "spread": 0,
+      "frames": 5,
+      "fps": 12,
+      "sounds": {
+        "fire": "fire.mp3",
+        "empty": "empty.mp3",
+        "reload": "reload.mp3"
+      }
+    },
+    {
+      "id": "knife",
+      "name": "Knife",
+      "damage": 10,
+      "fireRate": 2,
+      "ammoType": "none",
+      "ammoPerShot": 0,
+      "behaviorType": "hitscan",
+      "spread": 0,
+      "frames": 4,
+      "fps": 10,
+      "sounds": {
+        "fire": "",
+        "empty": ""
+      }
+    }
+  ],
+  "items": [
+    {
+      "id": "medkit",
+      "name": "Med Kit",
+      "type": "health",
+      "value": 25,
+      "score": 0,
+      "sounds": {
+        "pickup": "pickup.mp3"
+      }
+    },
+    {
+      "id": "food",
+      "name": "Food",
+      "type": "health",
+      "value": 10,
+      "score": 0,
+      "sounds": {
+        "pickup": "pickup.mp3"
+      }
+    },
+    {
+      "id": "ammo_clip",
+      "name": "Ammo Clip",
+      "type": "ammo",
+      "value": 8,
+      "ammoType": "bullets",
+      "score": 0,
+      "sounds": {
+        "pickup": "pickup.mp3"
+      }
+    },
+    {
+      "id": "key_gold",
+      "name": "Gold Key",
+      "type": "key",
+      "value": 1,
+      "keyColor": "gold",
+      "score": 0,
+      "sounds": {
+        "pickup": "pickup.mp3"
+      }
+    },
+    {
+      "id": "key_silver",
+      "name": "Silver Key",
+      "type": "key",
+      "value": 1,
+      "keyColor": "silver",
+      "score": 0,
+      "sounds": {
+        "pickup": "pickup.mp3"
+      }
+    },
+    {
+      "id": "treasure1",
+      "name": "Cross",
+      "type": "treasure",
+      "value": 0,
+      "score": 100,
+      "sounds": {
+        "pickup": "pickup.mp3"
+      }
+    },
+    {
+      "id": "treasure2",
+      "name": "Chalice",
+      "type": "treasure",
+      "value": 0,
+      "score": 500,
+      "sounds": {
+        "pickup": "pickup.mp3"
+      }
+    },
+    {
+      "id": "treasure3",
+      "name": "Crown",
+      "type": "treasure",
+      "value": 0,
+      "score": 5000,
+      "sounds": {
+        "pickup": "pickup.mp3"
+      }
+    },
+    {
+      "id": "oneup",
+      "name": "Extra Life",
+      "type": "life",
+      "value": 1,
+      "score": 0,
+      "sounds": {
+        "pickup": "pickup.mp3"
+      }
+    },
+    {
+      "id": "exit",
+      "name": "Exit",
+      "type": "exit",
+      "value": 0,
+      "score": 0,
+      "sounds": {
+        "pickup": "pickup.mp3"
+      }
+    }
+  ],
+  "textures": [
+    {
+      "id": "1",
+      "name": "Wall Tile 1",
+      "path": "ceiling.webp",
+      "type": "wall"
+    },
+    {
+      "id": "2",
+      "name": "Wall Tile 2",
+      "path": "floor_tile.webp",
+      "type": "wall"
+    },
+    {
+      "id": "3",
+      "name": "Wall Tile 3",
+      "path": "door.webp",
+      "type": "wall"
+    },
+    {
+      "id": "4",
+      "name": "Wall Tile 4",
+      "path": "wall_brick.webp",
+      "type": "wall"
+    },
+    {
+      "id": "5",
+      "name": "Wall Tile 5",
+      "path": "wall_stone.webp",
+      "type": "wall"
+    },
+    {
+      "id": "6",
+      "name": "Wall Tile 6",
+      "path": "wall_wood.webp",
+      "type": "wall"
+    }
+  ],
+  "audio": {
+    "music": [
+      "Eon_-_Ambient_Sci_Fi_Music_-__royalty_free___XVbvE0PJyss_.mp3",
+      "Free_Futuristic_Music_for_Youtube_videos__Royalty_Free_No_Copyright___mx0LzZJyd1M_.mp3",
+      "Free_Music_Retro_Sci-Fi_Music__Royalty_Free_No_Copyright___I4Coe-ld68U_.mp3",
+      "Free_Sci_Fi_Music_for_videos___Evolution__a6v-RL5ypR4_.mp3",
+      "Mystery___Free_mystery_music_for_YouTube_videos__no_copyright___rpMvf4Gdn-4_.mp3",
+      "Sirius_SciFi_-_Free_Sci-fi_Music_for_Videos__Royalty_Free_No_Copyright___60llyQkMces_.mp3",
+      "Tronicles_SciFi_-_Free_Music__Royalty_Free_No_Copyright___JUegvqJdyQI_.mp3"
+    ],
+    "playerStep": "step.mp3",
+    "playerDeath": "death.mp3",
+    "levelComplete": "level_complete.mp3"
+  },
+  "logoUrl": "/assets/47116121-d2c8-4be6-aca6-0a3fa9377283/assets/logo.webp",
+  "narrative": "You're the on call administrator and Nx AI Popped up on a Datadog report as consuming too many resources.  Because as we know in AI...   the S stands for security.  Anyway, you need to go into the server room, take the elevator to Level-2 and shut this AI down before the compute-costs scale beyond our cloud-spend budget."
+}
