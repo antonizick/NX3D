@@ -1,0 +1,13 @@
+{
+  "users": [
+    {
+      "id": "290e291a-0a6e-4f52-9137-78863d895294",
+      "username": "admin",
+      "passwordHash": "$2a$12$NhKUPW8oBj1XpJOdX1w8hOuDp2A9xxRA3SoCDwmxsMCe0USrIVrxu",
+      "role": "builder",
+      "totpEnabled": false,
+      "createdAt": "2026-05-06T00:56:49.513Z",
+      "lastLogin": "2026-05-06T01:11:44.210Z"
+    }
+  ]
+}
