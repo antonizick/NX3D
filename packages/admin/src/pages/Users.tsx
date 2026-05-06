@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog.tsx';
 import { Card, CardContent } from '@/components/ui/card.tsx';
 import { usersApi } from '@/lib/api.ts';
-import { useAuth } from '@/hooks/useAuth.ts';
+import { useTenant } from '@/contexts/TenantContext.tsx';
 
 const schema = z.object({
   username: z.string().min(2).max(40),
@@ -23,10 +23,10 @@ const schema = z.object({
 type Form = z.infer<typeof schema>;
 
 export function Users() {
-  const { user } = useAuth();
+  const { tenantId, tenants } = useTenant();
   const qc = useQueryClient();
-  const tenantId = user?.tenantId ?? '';
   const [open, setOpen] = useState(false);
+  const tenantName = tenants.find(t => t.tenantId === tenantId)?.name ?? tenantId;
 
   const form = useForm<Form>({
     resolver: zodResolver(schema),
@@ -74,7 +74,7 @@ export function Users() {
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Create User</DialogTitle>
+              <DialogTitle>Create User — {tenantName}</DialogTitle>
             </DialogHeader>
             <form onSubmit={onSubmit} className="space-y-4 pt-2">
               <div className="space-y-1">

@@ -35,6 +35,7 @@ export interface SpriteEntry {
   x: number; y: number;
   textureKey: string;
   scale?: number;
+  grounded?: boolean;
 }
 
 export class Renderer {
@@ -233,11 +234,16 @@ export class Renderer {
       const screenX = Math.floor((sw / 2) * (1 + transformX / transformY));
       const scale   = sprite.scale ?? 1;
 
-      const spriteH = Math.abs(Math.floor(sh / transformY)) * scale;
+      const spriteHFull = Math.abs(Math.floor(sh / transformY));
+      const spriteH = spriteHFull * scale;
       const spriteW = spriteH;
 
-      const drawStartY = Math.max(0,      Math.floor(-spriteH / 2 + sh / 2));
-      const drawEndY   = Math.min(sh - 1, Math.floor( spriteH / 2 + sh / 2));
+      // Grounded sprites sit on the floor rather than floating at eye level
+      const vShift  = sprite.grounded ? (spriteHFull - spriteH) / 2 : 0;
+      const centerY = sh / 2 + vShift;
+
+      const drawStartY = Math.max(0,      Math.floor(-spriteH / 2 + centerY));
+      const drawEndY   = Math.min(sh - 1, Math.floor( spriteH / 2 + centerY));
       const drawStartX = Math.max(0,      Math.floor(-spriteW / 2 + screenX));
       const drawEndX   = Math.min(sw - 1, Math.floor( spriteW / 2 + screenX));
 
@@ -252,7 +258,7 @@ export class Renderer {
         const clampedTexX = Math.max(0, Math.min(this.texSize - 1, texX));
 
         for (let sy = drawStartY; sy <= drawEndY; sy++) {
-          const d    = sy * 256 - sh * 128 + spriteH * 128;
+          const d    = sy * 256 - centerY * 256 + spriteH * 128;
           const texY = Math.max(0, Math.min(this.texSize - 1, Math.floor(d * this.texSize / spriteH / 256)));
           const colour = tex[texY * this.texSize + clampedTexX]!;
           // Skip transparent pixels (alpha = 0)

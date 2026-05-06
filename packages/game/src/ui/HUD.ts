@@ -4,8 +4,8 @@
  */
 import type { Player } from '../engine/Player.ts';
 
-const FACE_SIZE  = 48;
-const HUD_HEIGHT = 56; // px
+const FACE_SIZE  = 96;
+const HUD_HEIGHT = 112;
 
 export class HUD {
   private faceImages: HTMLImageElement[] = [];
@@ -22,55 +22,55 @@ export class HUD {
     );
   }
 
-  draw(ctx: CanvasRenderingContext2D, player: Player, sw: number, sh: number, levelTime: number, parTime: number): void {
-    const hudY = sh - HUD_HEIGHT;
+  draw(ctx: CanvasRenderingContext2D, player: Player, sw: number, sh: number, levelTime: number, parTime: number, currentLevel: number, totalLevels: number): void {
+    const hudY  = sh - HUD_HEIGHT;
+    const faceX = sw / 2 - FACE_SIZE / 2;
+    const faceY = hudY + (HUD_HEIGHT - FACE_SIZE) / 2;
 
     // Background bar
     ctx.fillStyle = this.hudColor;
     ctx.fillRect(0, hudY, sw, HUD_HEIGHT);
 
-    // ── Health ──────────────────────────────────────────────────────────────
-    ctx.fillStyle = '#ff3333';
-    ctx.font = 'bold 20px monospace';
-    ctx.textAlign = 'left';
-    ctx.fillText(`HP: ${player.health}%`, 8, hudY + 22);
-
     // ── Health face ─────────────────────────────────────────────────────────
     const face = this.faceImages[player.faceIndex];
-    const faceX = sw / 2 - FACE_SIZE / 2;
     if (face?.complete) {
-      ctx.drawImage(face, faceX, hudY + 4, FACE_SIZE, FACE_SIZE);
+      ctx.drawImage(face, faceX, faceY, FACE_SIZE, FACE_SIZE);
     } else {
-      // Fallback smiley
       ctx.fillStyle = '#f0d060';
       ctx.beginPath();
-      ctx.arc(faceX + 24, hudY + 28, 20, 0, Math.PI * 2);
+      ctx.arc(faceX + FACE_SIZE / 2, faceY + FACE_SIZE / 2, FACE_SIZE / 2 - 4, 0, Math.PI * 2);
       ctx.fill();
     }
 
-    // Pain tint
-    if (player.painTimer > 0) {
-      const alpha = Math.min(1, player.painTimer / 150) * 0.4;
-      ctx.fillStyle = `rgba(255, 0, 0, ${alpha})`;
-      ctx.fillRect(0, 0, sw, hudY);
-    }
+    // ── Lives — left of face ─────────────────────────────────────────────────
+    const faceMidY = faceY + FACE_SIZE / 2 + 6;
+    ctx.fillStyle = '#ffffff';
+    ctx.font      = 'bold 16px monospace';
+    ctx.textAlign = 'right';
+    ctx.fillText(`LIVES: ${player.lives}`, faceX - 8, faceMidY);
+
+    // ── Level counter — right of face ────────────────────────────────────────
+    ctx.textAlign = 'left';
+    ctx.fillText(`Level ${currentLevel} of ${totalLevels}`, faceX + FACE_SIZE + 8, faceMidY);
+
+    // ── Health ──────────────────────────────────────────────────────────────
+    ctx.fillStyle = '#ff3333';
+    ctx.font      = 'bold 20px monospace';
+    ctx.textAlign = 'left';
+    ctx.fillText(`HP: ${player.health}%`, 8, hudY + 32);
 
     // ── Ammo ────────────────────────────────────────────────────────────────
     const ammoType = player.currentWeapon.ammoType;
     const ammo     = ammoType === 'none' ? '∞' : (player.ammo[ammoType] ?? 0);
     ctx.fillStyle  = '#ffee00';
     ctx.textAlign  = 'right';
-    ctx.fillText(`${ammo} ${ammoType !== 'none' ? ammoType.toUpperCase() : ''}`, sw - 8, hudY + 22);
+    ctx.fillText(`${ammo} ${ammoType !== 'none' ? ammoType.toUpperCase() : ''}`, sw - 8, hudY + 32);
 
     // ── Score ────────────────────────────────────────────────────────────────
     ctx.fillStyle  = '#ffffff';
     ctx.textAlign  = 'left';
     ctx.font       = '14px monospace';
-    ctx.fillText(`SCORE: ${String(player.score).padStart(8, '0')}`, 8, hudY + 44);
-
-    // ── Lives ────────────────────────────────────────────────────────────────
-    ctx.textAlign  = 'center';
-    ctx.fillText(`LIVES: ${player.lives}`, sw / 2, hudY + 44);
+    ctx.fillText(`SCORE: ${String(player.score).padStart(8, '0')}`, 8, hudY + 68);
 
     // ── Time ─────────────────────────────────────────────────────────────────
     const timeLeft = Math.max(0, parTime - levelTime);
@@ -78,13 +78,30 @@ export class HUD {
     const s = Math.floor(timeLeft % 60);
     ctx.fillStyle  = timeLeft < 30 ? '#ff4444' : '#ffffff';
     ctx.textAlign  = 'right';
-    ctx.fillText(`PAR ${m}:${String(s).padStart(2, '0')}`, sw - 8, hudY + 44);
+    ctx.fillText(`PAR ${m}:${String(s).padStart(2, '0')}`, sw - 8, hudY + 68);
 
     // ── Weapon name ───────────────────────────────────────────────────────────
     ctx.fillStyle  = '#aaaaaa';
     ctx.textAlign  = 'left';
     ctx.font       = '12px monospace';
-    ctx.fillText(player.currentWeapon.name.toUpperCase(), 8, hudY + 56);
+    ctx.fillText(player.currentWeapon.name.toUpperCase(), 8, hudY + 96);
+
+    // ── Pain tint (hit flash) ────────────────────────────────────────────────
+    if (player.painTimer > 0) {
+      const alpha = Math.min(1, player.painTimer / 150) * 0.4;
+      ctx.fillStyle = `rgba(255, 0, 0, ${alpha})`;
+      ctx.fillRect(0, 0, sw, hudY);
+    }
+
+    // ── Low-health pulse ─────────────────────────────────────────────────────
+    // Pulses when health < 30%; intensity grows as health drops further
+    if (player.health < 30) {
+      const pulse     = Math.sin(Date.now() / 600) * 0.5 + 0.5;
+      const intensity = (30 - player.health) / 30;
+      const alpha     = pulse * intensity * 0.2;
+      ctx.fillStyle   = `rgba(255, 0, 0, ${alpha})`;
+      ctx.fillRect(0, 0, sw, hudY);
+    }
   }
 
   drawReticle(ctx: CanvasRenderingContext2D, sw: number, sh: number, alpha: number): void {

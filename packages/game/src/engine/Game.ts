@@ -48,6 +48,11 @@ export class Game {
   private texSize: 64 | 128 | 256 = 64;
   private pendingMessage   = '';
   private afterMessage: () => void = () => {};
+  private carryOver: {
+    health: number; lives: number; score: number;
+    kills: number; treasures: number; secretsFound: number;
+    ammo: Record<string, number>; weapons: string[]; currentWeaponId: string;
+  } | null = null;
 
   // Overlay canvas for HUD / menus (sits on top, CSS absolute)
   private hudCanvas!:  HTMLCanvasElement;
@@ -155,7 +160,7 @@ export class Game {
     );
     this.player.difficulty = this.difficulty;
 
-    // Restore save state if applicable
+    // Restore save state if applicable (Continue from menu)
     if (this.existingSave && this.existingSave.currentLevel === levelId) {
       this.player.health  = this.existingSave.health;
       this.player.score   = this.existingSave.score;
@@ -164,6 +169,21 @@ export class Game {
       this.player.keys    = [...this.existingSave.keys];
       this.player.weapons = [...this.existingSave.weapons];
       this.existingSave   = null;
+    }
+
+    // Carry over stats from previous level (normal level progression)
+    if (this.carryOver) {
+      this.player.health       = this.carryOver.health;
+      this.player.lives        = this.carryOver.lives;
+      this.player.score        = this.carryOver.score;
+      this.player.kills        = this.carryOver.kills;
+      this.player.treasures    = this.carryOver.treasures;
+      this.player.secretsFound = this.carryOver.secretsFound;
+      this.player.ammo         = this.carryOver.ammo;
+      this.player.weapons      = this.carryOver.weapons;
+      const wIdx = this.carryOver.weapons.indexOf(this.carryOver.currentWeaponId);
+      this.player.switchWeapon(wIdx >= 0 ? wIdx : 0);
+      this.carryOver = null;
     }
 
     this.weapon = new WeaponController();
@@ -312,6 +332,8 @@ export class Game {
         break;
       case 'easy': case 'normal': case 'hard':
         this.difficulty = action;
+        this.existingSave = null;
+        this.carryOver    = null;
         this.audio.resume();
         this.menu.reset();
         this.state = 'LOADING';
@@ -451,7 +473,7 @@ export class Game {
     // Render world — build item sprite list (unpicked only)
     const itemSprites = this.items
       .filter(i => !i.picked)
-      .map(i => ({ x: i.x, y: i.y, textureKey: `item_${i.manifest.id}`, scale: 0.65 }));
+      .map(i => ({ x: i.x, y: i.y, textureKey: `item_${i.manifest.id}`, scale: 0.65, grounded: true }));
     const allProjectiles = [...weapon.projectiles, ...this.enemyProjectiles];
     this.renderer.render(player, map, enemies, allProjectiles, itemSprites, {
       key: `weapon_${player.currentWeapon.id}_${weapon.frame}`,
@@ -460,11 +482,13 @@ export class Game {
     });
 
     // HUD overlay
-    const rect = this.gameCanvas.getBoundingClientRect();
-    const sw   = rect.width;
-    const sh   = rect.height;
+    const rect        = this.gameCanvas.getBoundingClientRect();
+    const sw          = rect.width;
+    const sh          = rect.height;
+    const totalLevels = this.cfg.game.episodes * this.cfg.game.levelsPerEpisode;
+    const globalLevel = (this.currentEpisode - 1) * this.cfg.game.levelsPerEpisode + this.currentLevel;
     this.hudCtx.clearRect(0, 0, sw, sh);
-    this.hud.draw(this.hudCtx, player, sw, sh, this.levelTime / 1000, this.currentLevelData?.parTime ?? 300);
+    this.hud.draw(this.hudCtx, player, sw, sh, this.levelTime / 1000, this.currentLevelData?.parTime ?? 300, globalLevel, totalLevels);
     this.hud.drawReticle(this.hudCtx, sw, sh, weapon.reticleAlpha);
   }
 
@@ -485,11 +509,23 @@ export class Game {
   private handleStateTransition(): void {
     switch (this.state) {
       case 'DEAD':
-        this.player.health = this.cfg.game.maxHealth;
+        this.existingSave = null;
+        this.carryOver    = null;
         this.state = 'LOADING';
         this.loadLevel(this.currentLevel, this.currentEpisode).catch(console.error);
         break;
       case 'LEVEL_COMPLETE': {
+        this.carryOver = {
+          health:       this.player.health,
+          lives:        this.player.lives,
+          score:        this.player.score,
+          kills:        this.player.kills,
+          treasures:    this.player.treasures,
+          secretsFound: this.player.secretsFound,
+          ammo:         { ...this.player.ammo },
+          weapons:      [...this.player.weapons],
+          currentWeaponId: this.player.currentWeapon.id,
+        };
         const nextLevel = this.currentLevel + 1;
         const levelsPerEp = this.cfg.game.levelsPerEpisode;
         if (nextLevel > levelsPerEp) {
