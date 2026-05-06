@@ -45,7 +45,6 @@ export class Game {
   private difficulty: 'easy' | 'normal' | 'hard' = 'normal';
   private levelCompleteReady = false;
   private levelCompleteAt   = 0;
-  private texSize: 64 | 128 | 256 = 64;
   private pendingMessage   = '';
   private afterMessage: () => void = () => {};
   private carryOver: {
@@ -86,17 +85,6 @@ export class Game {
     };
     resizeHud();
     window.addEventListener('resize', resizeHud);
-
-    const stored = Number(localStorage.getItem('cw_tex_size'));
-    this.texSize = (stored === 128 || stored === 256 ? stored : 64) as 64 | 128 | 256;
-    this.menu.syncTexSize(this.texSize);
-
-    this.gameCanvas.addEventListener('click', (e: MouseEvent) => {
-      if (this.state !== 'MENU') return;
-      const rect = this.gameCanvas.getBoundingClientRect();
-      const size = Menu.hitTestResolution(e.clientX - rect.left, e.clientY - rect.top, rect.width, rect.height);
-      if (size) { this.texSize = size; this.menu.syncTexSize(size); localStorage.setItem('cw_tex_size', String(size)); }
-    });
 
     this.input = new Input(this.gameCanvas);
     this.hud   = new HUD(this.tenantId, this.cfg.theme.hudColor);
@@ -145,7 +133,7 @@ export class Game {
     }
 
     // Set up renderer and load textures
-    this.renderer = new Renderer(this.gameCanvas, RENDER_W, RENDER_H, this.cfg, this.tenantId, this.texSize);
+    this.renderer = new Renderer(this.gameCanvas, RENDER_W, RENDER_H, this.cfg, this.tenantId, 256);
     await this.renderer.loadTextures();
 
     // Lazy-load sprite textures for visible enemies
@@ -307,18 +295,10 @@ export class Game {
       this.hudCtx.fillRect(0, 0, sw, sh);
     }
 
-    this.menu.draw(this.hudCtx, sw, sh, this.cfg.game.title, this.logoImg, this.texSize, this.cfg.narrative);
+    this.menu.draw(this.hudCtx, sw, sh, this.cfg.game.title, this.logoImg, this.cfg.narrative);
 
     if (input.justPressed('ArrowUp'))   this.menu.navigate('up');
     if (input.justPressed('ArrowDown')) this.menu.navigate('down');
-    if (this.menu.isResolutionFocused) {
-      if (input.justPressed('ArrowLeft') || input.justPressed('ArrowRight')) {
-        const dir  = input.justPressed('ArrowLeft') ? 'left' : 'right';
-        const size = this.menu.navigateResolution(dir);
-        this.texSize = size;
-        localStorage.setItem('cw_tex_size', String(size));
-      }
-    }
     if (input.justPressed('Enter')) {
       const action = this.menu.select() as MenuAction | null;
       if (action) this.handleMenuAction(action);
@@ -362,7 +342,7 @@ export class Game {
     const sw = this.hudCanvas.width / devicePixelRatio;
     const sh = this.hudCanvas.height / devicePixelRatio;
 
-    this.menu.draw(this.hudCtx, sw, sh, this.cfg.game.title, this.logoImg, this.texSize);
+    this.menu.draw(this.hudCtx, sw, sh, this.cfg.game.title, this.logoImg);
 
     if (input.justPressed('ArrowUp'))   this.menu.navigate('up');
     if (input.justPressed('ArrowDown')) this.menu.navigate('down');

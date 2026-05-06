@@ -2,20 +2,6 @@ import type { GameState } from '../types/index.ts';
 
 export type MenuAction = 'newgame' | 'continue' | 'save' | 'load' | 'quit' | 'easy' | 'normal' | 'hard' | 'resume';
 
-type TexSize = 64 | 128 | 256;
-const SIZES: readonly TexSize[] = [64, 128, 256];
-
-function resButtonBounds(sw: number, sh: number): Array<{ x: number; y: number; w: number; h: number; size: TexSize }> {
-  const btnW = 74, btnH = 22, gap = 8;
-  const startX = (sw - (3 * btnW + 2 * gap)) / 2;
-  const y = sh - 90;
-  return [
-    { x: startX,                   y, w: btnW, h: btnH, size: 64  },
-    { x: startX + btnW + gap,      y, w: btnW, h: btnH, size: 128 },
-    { x: startX + 2*(btnW + gap),  y, w: btnW, h: btnH, size: 256 },
-  ];
-}
-
 interface MenuItem { label: string; action: MenuAction; }
 
 const MAIN_MENU: MenuItem[] = [
@@ -91,8 +77,6 @@ export class Menu {
   private selectedIdx   = 0;
   private items: MenuItem[] = MAIN_MENU;
   private mode: 'main' | 'difficulty' | 'pause' = 'main';
-  private resFocused    = false;
-  private resIdx        = 0;   // index into SIZES
 
   draw(
     ctx: CanvasRenderingContext2D,
@@ -100,7 +84,6 @@ export class Menu {
     sh: number,
     title: string,
     logoImg: HTMLImageElement | null = null,
-    texSize: TexSize = 64,
     narrative?: string
   ): void {
     ctx.fillStyle = 'rgba(0,0,0,0.75)';
@@ -110,21 +93,19 @@ export class Menu {
     const titleBottom = drawBranding(ctx, sw, brandingTop, title, logoImg);
 
     this.items.forEach((item, i) => {
-      const isSelected = !this.resFocused && i === this.selectedIdx;
+      const isSelected = i === this.selectedIdx;
       ctx.fillStyle = isSelected ? '#ffffff' : '#888888';
       ctx.font      = isSelected ? 'bold 22px monospace' : '20px monospace';
       const y       = titleBottom + 40 + i * 40;
       ctx.fillText((isSelected ? '> ' : '  ') + item.label, sw / 2, y);
     });
 
-    // Narrative text — shown below menu items on main screen only
     if (narrative?.trim() && this.mode === 'main') {
       const lastItemY = titleBottom + 40 + (this.items.length - 1) * 40;
-      const resButtonsTop = sh - 110;
-      const narrativeCenterY = (lastItemY + resButtonsTop) / 2;
-      const font = '13px monospace';
+      const narrativeCenterY = (lastItemY + (sh - 60)) / 2;
+      const font = '18px monospace';
       const lines = wrapText(ctx, narrative.trim(), sw * 0.65, font);
-      const lineHeight = 20;
+      const lineHeight = 26;
       const blockH = lines.length * lineHeight;
       let y = narrativeCenterY - blockH / 2 + lineHeight;
 
@@ -140,100 +121,17 @@ export class Menu {
     ctx.fillStyle = '#555555';
     ctx.font      = '12px monospace';
     ctx.fillText('↑↓ to select · ENTER to choose · ESC to cancel', sw / 2, sh - 40);
-
-    if (this.mode === 'main') {
-      const buttons = resButtonBounds(sw, sh);
-      const midY    = buttons[0]!.y + buttons[0]!.h / 2;
-
-      // Row label
-      ctx.font      = '10px monospace';
-      ctx.fillStyle = this.resFocused ? '#777777' : '#3a3a3a';
-      ctx.fillText('TEXTURE', sw / 2, buttons[0]!.y - 5);
-
-      // Outer nav arrows (only when focused)
-      if (this.resFocused) {
-        ctx.fillStyle = '#666666';
-        ctx.font      = '13px monospace';
-        ctx.fillText('◄', buttons[0]!.x - 14, midY + 5);
-        ctx.fillText('►', buttons[2]!.x + buttons[2]!.w + 14, midY + 5);
-      }
-
-      ctx.font = '11px monospace';
-      for (let i = 0; i < buttons.length; i++) {
-        const btn      = buttons[i]!;
-        const isCurrent = btn.size === texSize;
-        const isFocused = this.resFocused && i === this.resIdx;
-
-        if (isFocused) {
-          ctx.strokeStyle = '#ffffff';
-          ctx.lineWidth   = 1;
-          ctx.strokeRect(btn.x + 0.5, btn.y + 0.5, btn.w - 1, btn.h - 1);
-          ctx.fillStyle   = '#ffffff';
-        } else if (isCurrent) {
-          ctx.strokeStyle = '#c8a000';
-          ctx.lineWidth   = 1;
-          ctx.strokeRect(btn.x + 0.5, btn.y + 0.5, btn.w - 1, btn.h - 1);
-          ctx.fillStyle   = '#c8a000';
-        } else {
-          ctx.fillStyle = this.resFocused ? '#555555' : '#3a3a3a';
-        }
-
-        ctx.fillText(`${btn.size}×${btn.size}`, btn.x + btn.w / 2, midY + 4);
-      }
-
-      // Focus indicator when the whole row is navigated to but arrow keys haven't been used
-      if (this.resFocused) {
-        ctx.fillStyle = '#555555';
-        ctx.font      = '10px monospace';
-        ctx.fillText('← → change  ·  ENTER confirm', sw / 2, buttons[0]!.y + buttons[0]!.h + 13);
-      }
-    }
   }
 
   navigate(direction: 'up' | 'down'): void {
-    if (this.mode === 'main') {
-      if (this.resFocused) {
-        this.resFocused = false;
-        if (direction === 'down') this.selectedIdx = 0;
-        // up: selectedIdx stays on last item (where we came from)
-      } else {
-        const n = this.items.length;
-        if (direction === 'down') {
-          if (this.selectedIdx === n - 1) { this.resFocused = true; }
-          else { this.selectedIdx++; }
-        } else {
-          if (this.selectedIdx === 0) { this.resFocused = true; }
-          else { this.selectedIdx--; }
-        }
-      }
+    if (direction === 'up') {
+      this.selectedIdx = (this.selectedIdx - 1 + this.items.length) % this.items.length;
     } else {
-      if (direction === 'up') {
-        this.selectedIdx = (this.selectedIdx - 1 + this.items.length) % this.items.length;
-      } else {
-        this.selectedIdx = (this.selectedIdx + 1) % this.items.length;
-      }
+      this.selectedIdx = (this.selectedIdx + 1) % this.items.length;
     }
-  }
-
-  navigateResolution(dir: 'left' | 'right'): TexSize {
-    const n = SIZES.length;
-    if (dir === 'left') this.resIdx = (this.resIdx - 1 + n) % n;
-    else                this.resIdx = (this.resIdx + 1) % n;
-    return SIZES[this.resIdx]!;
-  }
-
-  get isResolutionFocused(): boolean { return this.resFocused && this.mode === 'main'; }
-
-  syncTexSize(size: TexSize): void {
-    const idx = SIZES.indexOf(size);
-    this.resIdx = idx >= 0 ? idx : 0;
   }
 
   select(): MenuAction | null {
-    if (this.resFocused) {
-      this.resFocused = false;  // Enter confirms, returns focus to menu items
-      return null;
-    }
     const action = this.items[this.selectedIdx]?.action ?? null;
     if (action === 'newgame') {
       this.mode  = 'difficulty';
@@ -248,21 +146,12 @@ export class Menu {
     this.mode        = 'main';
     this.items       = MAIN_MENU;
     this.selectedIdx = 0;
-    this.resFocused  = false;
   }
 
   enterPause(): void {
     this.mode        = 'pause';
     this.items       = PAUSE_MENU;
     this.selectedIdx = 0;
-    this.resFocused  = false;
-  }
-
-  static hitTestResolution(x: number, y: number, sw: number, sh: number): TexSize | null {
-    for (const btn of resButtonBounds(sw, sh)) {
-      if (x >= btn.x && x <= btn.x + btn.w && y >= btn.y && y <= btn.y + btn.h) return btn.size;
-    }
-    return null;
   }
 
   static drawLoading(
@@ -284,7 +173,7 @@ export class Menu {
     ctx.fillText(`LOADING${dots}`, sw / 2, titleBottom + 60);
 
     ctx.fillStyle = '#555555';
-    ctx.font      = '14px monospace';
+    ctx.font      = '18px monospace';
     ctx.fillText('Preparing level — please wait', sw / 2, titleBottom + 100);
   }
 
@@ -310,7 +199,7 @@ export class Menu {
     ctx.fillText(title, sw / 2, sh / 2 - 20);
 
     ctx.fillStyle = '#ffffff';
-    ctx.font      = '20px monospace';
+    ctx.font      = '26px monospace';
     ctx.fillText(sub, sw / 2, sh / 2 + 30);
   }
 
@@ -324,9 +213,9 @@ export class Menu {
     ctx.fillStyle = 'rgba(0,0,0,0.88)';
     ctx.fillRect(0, 0, sw, sh);
 
-    const font = '15px monospace';
+    const font = '20px monospace';
     const lines = wrapText(ctx, message.trim(), sw * 0.72, font);
-    const lineHeight = 22;
+    const lineHeight = 28;
     const blockH = lines.length * lineHeight;
     let y = sh / 2 - blockH / 2;
 
