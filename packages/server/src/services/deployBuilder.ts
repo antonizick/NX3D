@@ -73,9 +73,7 @@ export async function buildDeployPackage(tenantId: string): Promise<BuildInfo> {
     await copyDirFs(path.join(tenantRoot, 'assets'), path.join(tenantDest, 'assets'));
     await copyDirFs(path.join(tenantRoot, 'levels'), path.join(tenantDest, 'levels'));
 
-    // Strip logoUrl — it's a remote URL, irrelevant in standalone
     const standaloneConfig = { ...cfg };
-    delete standaloneConfig.logoUrl;
     await fs.writeFile(
       path.join(tenantDest, 'config.json'),
       JSON.stringify(standaloneConfig, null, 2)
@@ -183,7 +181,7 @@ async function main() {
     root: PUBLIC_DIR, prefix: '/game/', decorateReply: true, index: false,
   });
   await app.register(fastifyStatic, {
-    root: path.dirname(TENANT_DIR), prefix: '/assets/', decorateReply: false, index: false,
+    root: path.join(TENANT_DIR, 'assets'), prefix: \`/assets/\${TENANT_ID}/assets/\`, decorateReply: false, index: false,
   });
 
   app.get(\`/api/game/\${TENANT_ID}/config\`, async (_, reply) => {

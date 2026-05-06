@@ -58,7 +58,7 @@ fi
 
 # ── Init-system helpers ───────────────────────────────────────────────────────
 
-_has_sudo() { sudo -n true 2>/dev/null; }
+_has_sudo() { timeout 3 sudo -n true 2>/dev/null; }
 
 # True only when systemd is actually PID 1 (not just installed).
 # Guards against Docker/LXC/WSL environments where systemctl exists but can't operate.
@@ -77,14 +77,14 @@ _scan_instances() {
   # Only query systemd if it is actually running
   if _systemd_active 2>/dev/null; then
     while IFS= read -r svc; do
-      [[ -n "$svc" ]] && INSTANCES+=("systemd:${svc}")
-    done < <(systemctl list-units --type=service --no-legend 2>/dev/null \
+      if [[ -n "$svc" ]]; then INSTANCES+=("systemd:${svc}"); fi
+    done < <(timeout 5 systemctl list-units --type=service --no-legend 2>/dev/null \
       | awk '{print $1}' | grep "^${SVC_PREFIX}-${GAME_SLUG}" || true)
   fi
   if command -v pm2 &>/dev/null 2>&1; then
     while IFS= read -r name; do
-      [[ -n "$name" ]] && INSTANCES+=("pm2:${name}")
-    done < <(pm2 list --no-color 2>/dev/null \
+      if [[ -n "$name" ]]; then INSTANCES+=("pm2:${name}"); fi
+    done < <(timeout 5 pm2 list --no-color 2>/dev/null \
       | awk '{print $4}' | grep "^${SVC_PREFIX}-${GAME_SLUG}" || true)
   fi
   # Also look for a PID file left by the nohup fallback
@@ -94,8 +94,11 @@ _scan_instances() {
     local pid port_dir
     pid="$(cat "$pid_glob" 2>/dev/null || true)"
     port_dir="$(basename "$(dirname "$pid_glob")")"
-    [[ -n "$pid" ]] && kill -0 "$pid" 2>/dev/null && INSTANCES+=("nohup:${port_dir}:${pid}")
+    if [[ -n "$pid" ]] && kill -0 "$pid" 2>/dev/null; then
+      INSTANCES+=("nohup:${port_dir}:${pid}")
+    fi
   done
+  return 0
 }
 
 _stop_instance() {

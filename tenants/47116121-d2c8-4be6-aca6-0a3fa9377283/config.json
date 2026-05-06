@@ -19,7 +19,7 @@
       "bullets": 99,
       "shells": 50
     },
-    "weaponRange": 11
+    "weaponRange": 9
   },
   "enemies": [
     {
@@ -255,5 +255,5 @@
     "levelComplete": "level_complete.mp3"
   },
   "logoUrl": "/assets/47116121-d2c8-4be6-aca6-0a3fa9377283/assets/logo.webp",
-  "narrative": "You're the on call administrator and Nx AI Popped up on a Datadog report as consuming too many resources.  Because as we know in AI...   the S stands for security.  Anyway, you need to go into the server room, take the elevator to Level-2 and shut this AI down before the compute-costs scale beyond our cloud-spend budget."
+  "narrative": "You're the on call administrator and the new Nx-AI Agentic agent popped up on a Datadog report as consuming too many resources.  Because as we know in AI...   the S stands for security.  Anyway, you need to go into the server room, take the elevator to Level-2 and shut this AI down before the compute-costs scale beyond our cloud-spend budget."
 }
