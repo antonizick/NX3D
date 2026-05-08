@@ -2,7 +2,7 @@
 
 ## Reporting a Vulnerability
 
-We take security seriously at CustomWolf. If you discover a security vulnerability, please report it responsibly and discreetly.
+I take security seriously please report it responsibly and discreetly.
 
 **Do not open a public GitHub issue for security vulnerabilities.** Instead, please email:
 
@@ -24,7 +24,7 @@ Please include the following details to help us understand and address the issue
 
 ## Response Timeline
 
-- **Initial acknowledgment**: Within 24 hours
+- **Initial acknowledgment**: Within 5 Days
 - **Status updates**: Every 3-5 days during investigation and remediation
 - **Fix and release**: As soon as practically possible, typically within 30 days for critical issues
 - **Public disclosure**: Coordinated with you after a fix is released or 90 days have passed, whichever comes first
@@ -33,8 +33,7 @@ Please include the following details to help us understand and address the issue
 
 ### In Scope
 
-- Authentication and authorization bypass (login system, JWT handling, role checks)
-- Sensitive data exposure (credentials, tenant data, user PII, game saves)
+- Deployed games ONLY, not the admin builder environment
 - Cross-site scripting (XSS) in admin panel or game interface
 - Cross-site request forgery (CSRF) affecting state-changing operations
 - Server-side request forgery (SSRF)
@@ -44,9 +43,6 @@ Please include the following details to help us understand and address the issue
 - Denial of service attacks with reasonable effort
 - Insecure deserialization
 - Cryptographic weaknesses
-- Privilege escalation (admin, builder, or tenant boundaries)
-- Insecure file upload handling
-- Tenant isolation issues (one tenant accessing another's data)
 
 ### Out of Scope
 
@@ -56,14 +52,14 @@ Please include the following details to help us understand and address the issue
 - Vulnerabilities in demonstration/test deployments
 - Missing security.txt or similar advisory files
 - Known issues already documented in the README or issue tracker
-- Vulnerabilities that require physical access to the server
+- Vulnerabilities that require physical access to the admin or build server
 - Default credentials used only in development/demo environments
 - Reflected vulnerabilities in error messages that don't leak sensitive data
 - Low-impact UI/UX issues (misleading text, confusing design)
 
 ## Security Best Practices (for contributors)
 
-If you're contributing to CustomWolf, please follow these guidelines:
+If you're contributing to Nx3DWolf, please follow these guidelines:
 
 ### Authentication & Authorization
 - All API endpoints requiring authentication must validate the auth cookie and user role
@@ -102,7 +98,7 @@ If you're contributing to CustomWolf, please follow these guidelines:
 
 ## Known Limitations & Design Decisions
 
-CustomWolf is built as a **single-player or locally-networked game** with optional multi-tenant admin capabilities. It is **not designed for large-scale production SaaS deployments**. Key limitations:
+Nx3D is built as a **single-player or locally-networked game** with optional multi-tenant admin capabilities. It is **not designed for large-scale production SaaS deployments**. Key limitations:
 
 - **No database**: Tenant data is JSON files on the filesystem; not suitable for high-concurrency environments
 - **Single-server only**: No clustering, horizontal scaling, or distributed session management
@@ -110,8 +106,9 @@ CustomWolf is built as a **single-player or locally-networked game** with option
 - **Admin panel authentication**: Basic JWT-based; appropriate for trusted internal use, not public-facing
 - **Game saves**: Stored as plaintext JSON; encrypted storage not implemented
 - **No rate limiting**: Deployment may require external rate limiting (reverse proxy like Caddy)
+- **No Tenant isolation **: Tenant isolation is not implemented in any way. 
 
-If you plan to deploy CustomWolf in a higher-security context, please conduct a threat model review with a security professional.
+If you plan to deploy Nx3D  in a higher-security context, please conduct a threat model review with a security professional.
 
 ## Security Headers & Configuration
 
@@ -133,7 +130,7 @@ Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'
 
 ## Acknowledgment
 
-We appreciate your help in keeping CustomWolf secure. Upon responsible disclosure and remediation, we will acknowledge your contribution in our release notes (with your permission).
+I appreciate your help in keeping Nx3D secure. Upon responsible disclosure and remediation, we will acknowledge your contribution in our release notes (with your permission).
 
 ## Questions?
 
