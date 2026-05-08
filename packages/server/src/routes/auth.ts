@@ -53,7 +53,7 @@ export async function authRoutes(fastify: FastifyInstance): Promise<void> {
     await userService.touchLastLogin(tenantId, user.id);
     const payload: JwtPayload = { tenantId, userId: user.id, username, role: user.role };
     const token = fastify.jwt.sign(payload, { expiresIn: '12h' });
-    reply.setCookie('auth', token, { httpOnly: true, sameSite: 'lax', path: '/' });
+    reply.setCookie('auth', token, { httpOnly: true, sameSite: 'lax', secure: process.env.NODE_ENV === 'production', path: '/' });
     return reply.send({ ok: true, role: user.role, tenantId, username });
   });
 
@@ -82,7 +82,7 @@ export async function authRoutes(fastify: FastifyInstance): Promise<void> {
     await userService.touchLastLogin(tenantId, userId);
     const payload: JwtPayload = { tenantId, userId, username: user.username, role: user.role };
     const jwtToken = fastify.jwt.sign(payload, { expiresIn: '12h' });
-    reply.setCookie('auth', jwtToken, { httpOnly: true, sameSite: 'lax', path: '/' });
+    reply.setCookie('auth', jwtToken, { httpOnly: true, sameSite: 'lax', secure: process.env.NODE_ENV === 'production', path: '/' });
     return reply.send({ ok: true, role: user.role, tenantId, username: user.username });
   });
 
