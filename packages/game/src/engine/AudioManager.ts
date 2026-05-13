@@ -1,4 +1,4 @@
-import type { AudioManifest, EnemyManifest, WeaponManifest, ItemManifest } from '../types/index.ts';
+import type { AudioManifest, EnemyManifest, WeaponManifest, ItemManifest, TenantConfig } from '../types/index.ts';
 
 export class AudioManager {
   private _ctx: AudioContext | null = null;
@@ -219,6 +219,41 @@ export class AudioManager {
     try { this.musicSrc?.stop(); } catch { /* already stopped */ }
     this.musicSrc  = null;
     this.musicGain = null;
+  }
+
+  /** Eagerly fetch + decode all audio from cfg into cache while on the menu screen. Fire-and-forget. */
+  preloadAll(cfg: TenantConfig): void {
+    const urls: string[] = [];
+
+    for (const e of cfg.enemies) {
+      if (e.sounds?.alert)  urls.push(this.url('sounds/enemies', e.id, e.sounds.alert));
+      if (e.sounds?.pain)   urls.push(this.url('sounds/enemies', e.id, e.sounds.pain));
+      if (e.sounds?.death)  urls.push(this.url('sounds/enemies', e.id, e.sounds.death));
+      if (e.sounds?.attack) urls.push(this.url('sounds/enemies', e.id, e.sounds.attack));
+      if (e.sounds?.step)   urls.push(this.url('sounds/enemies', e.id, e.sounds.step));
+    }
+
+    for (const w of cfg.weapons) {
+      if (w.sounds?.fire)   urls.push(this.url('sounds/weapons', w.id, w.sounds.fire));
+      if (w.sounds?.empty)  urls.push(this.url('sounds/weapons', w.id, w.sounds.empty));
+      if (w.sounds?.reload) urls.push(this.url('sounds/weapons', w.id, w.sounds.reload));
+    }
+
+    for (const i of cfg.items) {
+      if (i.sounds?.pickup) urls.push(this.url('sounds/items', i.id, i.sounds.pickup));
+    }
+
+    const a = cfg.audio ?? {};
+    if (a.playerStep)    urls.push(this.url('sounds/player', null, a.playerStep));
+    if (a.playerDeath)   urls.push(this.url('sounds/player', null, a.playerDeath));
+    if (a.levelComplete) urls.push(this.url('sounds/player', null, a.levelComplete));
+
+    const tracks = Array.isArray(a.music) ? a.music : a.music ? [a.music as string] : [];
+    for (const t of tracks) {
+      if (t) urls.push(this.url('sounds/music', null, t));
+    }
+
+    for (const u of urls) this.load(u).catch(() => {});
   }
 
   destroy(): void {

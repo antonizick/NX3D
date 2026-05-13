@@ -89,6 +89,7 @@ export class Game {
     this.input = new Input(this.gameCanvas);
     this.hud   = new HUD(this.tenantId, this.cfg.theme.hudColor);
     this.audio = new AudioManager(this.tenantId);
+    this.audio.preloadAll(this.cfg); // warm audio cache while menu is shown
     await this.hud.loadFaces();
 
     // Load tenant logo if configured
