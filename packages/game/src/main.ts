@@ -14,7 +14,11 @@ async function bootstrap(): Promise<void> {
   const tenantId = segments[1];
 
   if (!tenantId) {
-    document.body.innerHTML = '<p style="color:#fff;padding:2rem">No tenant specified in URL. Use /game/{tenantId}</p>';
+    const p = document.createElement('p');
+    p.style.color = '#fff';
+    p.style.padding = '2rem';
+    p.textContent = 'No tenant specified in URL. Use /game/{tenantId}';
+    document.body.appendChild(p);
     return;
   }
 
@@ -26,7 +30,11 @@ async function bootstrap(): Promise<void> {
     cfg = await res.json();
     document.title = cfg.game.title;
   } catch (err) {
-    document.body.innerHTML = `<p style="color:red;padding:2rem">Failed to load tenant config: ${err}</p>`;
+    const p = document.createElement('p');
+    p.style.color = 'red';
+    p.style.padding = '2rem';
+    p.textContent = `Failed to load tenant config: ${err}`;
+    document.body.appendChild(p);
     return;
   }
 
@@ -48,5 +56,10 @@ async function bootstrap(): Promise<void> {
 
 bootstrap().catch(err => {
   console.error('Fatal game error:', err);
-  document.body.innerHTML = `<p style="color:red;padding:2rem;font-family:monospace">Fatal error: ${err.message}</p>`;
+  const p = document.createElement('p');
+  p.style.color = 'red';
+  p.style.padding = '2rem';
+  p.style.fontFamily = 'monospace';
+  p.textContent = `Fatal error: ${err.message}`;
+  document.body.appendChild(p);
 });
