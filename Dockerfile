@@ -42,6 +42,10 @@ COPY --from=build-game  /app/packages/game/dist  ./packages/server/dist/public/g
 VOLUME ["/app/tenants"]
 COPY tenants/_defaults /app/tenants/_defaults
 
+# Run as non-root user for security
+RUN useradd -m appuser && chown -R appuser:appuser /app
+USER appuser
+
 ENV NODE_ENV=production
 EXPOSE 3001
 
